@@ -1,0 +1,119 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {useState, useEffect } from "react"
+
+import { Button, Form,Tab,Table } from 'react-bootstrap';
+
+function ImageUploader() {
+
+    const [file, setFile] = useState({});
+    const [data, setData] = useState({
+        header: [],
+        body: []
+    });
+
+
+    const confirm = () => {
+
+        console.log("sending file");
+
+
+        const formData = new FormData();
+        formData.append("data", file);
+
+        // axios.post("http://localhost:3000/",formData,{
+
+        //     headers:{
+        //         "Content-Type":"multipart/form-data" 
+        //     }
+        // })
+
+
+        setOpen(false);
+
+        setFile({});
+    }
+
+    useEffect(() => {
+        if (!file.type) return
+        const reader = new FileReader()
+        switch (file.type) {
+            case "text/csv":
+                reader.readAsText(file);
+                reader.addEventListener("load", (event) => {
+                    const target = event.target.result.split("\n");
+                    async function fillData() {
+                        return new Promise((resolve, _) => {
+                            let temp = { header: [...target[0].split(","), "id"], body: [] };
+                            for (let i = 1; i < target.length; i++) {
+                                temp.body.push([...target[i].split(","), i])
+                            }
+                            resolve(temp)
+                        })
+                    }
+                    fillData().then(res => {
+                        setData(res)
+                    })
+                })
+                break
+            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                reader.readAsArrayBuffer(file)
+                reader.addEventListener("load", async (event) => {
+                    let dataToUint = new Uint8Array(event.target.result);
+                    let xlsData = XLSX.read(dataToUint, { type: "array" });
+                    const firstSheet = xlsData.SheetNames[0];
+                    const parsed = XLSX.utils.sheet_to_json(xlsData.Sheets[firstSheet], { header: 1 });
+                    async function fillData() {
+                        let i = 1;
+                        let temp = { header: [...parsed[0], "id"], body: [] };
+                        return new Promise((resolve, reject) => {
+                            while (i < parsed.length) {
+                                temp.body.push([...parsed[i], i])
+                                i++;
+                            }
+                            resolve(temp);
+                        })
+                    }
+                    fillData().then(res => {
+                        setData(res)
+                    }).then(_ => {
+                        console.log(data);
+                    })
+                })
+                break
+            default:
+                window.api.warning("file type not supported");
+        }
+    }, [file])
+
+
+
+
+
+    return (
+        <div id="fileForm">
+            <h1>CARICA FILE</h1>
+            <div>
+                <Form.Control onChange={e => setFile(e.target.files[0])} id="fileInput" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel text/csv" />
+                {
+                            data.header.length > 0 &&
+                            <table >
+                                <thead className="text-2xl">
+                                    <tr className="border-2">
+                                        {data.header.map(head => <th className="h-16 border-l-2 p-3 text-center" key={head}>{head}</th>)}
+                                    </tr>
+                                </thead>
+                                <tbody >
+                                    {
+                                        data.body.map(data => <tr className={`border-2 h-16  ${data.at(-1) % 2 === 0 && "bg-sky-100"}`} key={data}>{data.map(x => <td className="text-lg text-center border-l-2">{x}</td>)}</tr>)
+                                    }
+                                </tbody>
+                            </table>
+                        }
+            </div>
+        </div>
+    )
+}
+
+
+const ALLOWED_FORMATS = "text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"// only accept xsls and csv
+export default ImageUploader;
