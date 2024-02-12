@@ -1,5 +1,5 @@
 import express from 'express';
-import { validateLogin } from './utils';
+import { validateLogin,checkDate } from './utils';
 import couchDb from './database';
 import bcrypt from 'bcrypt';
 import cors from 'cors';
@@ -54,6 +54,7 @@ server.post("/api/login", (req, res) => {
 
 
 server.get("/api/bizerba/scontrino/:id", (req, res) => {
+    
     sql.connect(config, err => {
         if (err) return res.json({ status: "error", message: err.message });
         const request = new sql.Request();
@@ -70,6 +71,8 @@ server.get("/api/bizerba/scontrino/:id", (req, res) => {
     })
 });
 
+
+
 server.post("/api/update-prices", async (req, res) => {
 
     const created_at = moment().format(DATE_FORMAT);
@@ -80,16 +83,11 @@ server.post("/api/update-prices", async (req, res) => {
 
     let data = check[0].price_date;
 
-    let notEqual = 0;
+   
+    let nq = checkDate(check,toBe,data)
 
-    for (let i = 1; i < toBe; i++) {
-        if (check[i].price_date != data) {
-            notEqual = i;
-            break
-        }
-    }
-
-    if (notEqual > 0) return res.json({ status: "errore", message: `trovata un incongruenza con le date dei prezzi alla riga all'articolo con product_id ${check[notEqual].product_id}` })
+    // ! QUESTA DUNZIONE RITORNA > 0 SE CE' UN INDEX DI UN PRODOTTO CHE NON RISPETTA LA DATA MEDIA
+    if (nq > 0) return res.json({ status: "errore", message: `trovata un incongruenza con le date dei prezzi alla riga all'articolo con product_id ${check[nq].product_id}` })
 
 
 
@@ -97,7 +95,6 @@ server.post("/api/update-prices", async (req, res) => {
 
 
     const found_by_date = price_list_by_date.find(x => x.key == data)
-
 
 
 

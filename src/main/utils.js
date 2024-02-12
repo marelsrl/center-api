@@ -16,3 +16,15 @@ export function validateSignin(form){
     return true;
 }
 
+export function checkDate(check,toBe,data){
+    let notEqual = 0;
+
+    for (let i = 1; i < toBe; i++) {
+        if (check[i].price_date != data) {
+            notEqual = i;
+            break
+        }
+    }
+
+    return notEqual > 0
+}

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-function Index() {
+function Menu() {
 
     return (
         <div className="min-h-screen min-w-screen flex items-center justify-center">
@@ -15,9 +15,13 @@ function Index() {
                 <Link to="/check_latest_price">
                     <li>check latest price</li>
                 </Link>
+                <br/>
+                <Link to="/sessions">
+                    <li>sessions</li>
+                </Link>
             </ul>
         </div>
     )
 }
 
-export default Index;
+export default Menu;

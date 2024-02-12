@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Carousel from 'react-bootstrap/Carousel';
 
-import Block from "./Block";
+import Block from "../components/excelTable";
 
-function CheckLatestPrice() {
+function PriceList() {
 
     let [tableData, setTableData] = useState([]);
     useEffect(() => {
@@ -43,4 +43,4 @@ function CheckLatestPrice() {
     )
 }
 
-export default CheckLatestPrice;
+export default PriceList;

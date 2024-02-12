@@ -18,7 +18,7 @@ const TEMPLATE = [
     "discount_value_in_cents__RAPO", // DISCOUNT
     "product_weigth_in_grams__MENG", // WEIGTH
     "costumer_id__KDNR",
-    "plu__PLNR",
+    "plu__PLNR", // PLU REFERENCE
     "special_price__SPRE",
     "item_department_only_in_STYP_records_equals_2__ABNR",
     "scale_department_id__ABNR_HEAD",

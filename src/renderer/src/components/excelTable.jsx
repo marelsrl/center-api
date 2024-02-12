@@ -1,6 +1,6 @@
 import { Table } from "react-bootstrap";
 
-function Block({ data }) {
+function ExcelTable({ data }) {
     const header = Object.keys(data[0]).slice(0,12);
 
     return (
@@ -27,4 +27,4 @@ function Block({ data }) {
     );
 }
 
-export default Block;
+export default ExcelTable;

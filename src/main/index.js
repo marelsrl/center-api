@@ -12,6 +12,11 @@ import server from './server.js';
 import couchDb from "./database.js";
 import bcrypt from 'bcrypt';
 
+import fs from 'fs'
+import { checkDate } from './utils.js';
+
+//
+
 const credentials = {
   user: "admin",
   pass: "admin"
@@ -101,35 +106,42 @@ ipcMain.handle("loadSheet", async (event, payload) => {
   const created_at = moment().format(DATE_FORMAT);
   const TEMP_USER = "user";
   
-
+ 
   const parsed = JSON.parse(payload);
 
   let keys = parsed.header;
   let result = []
   parsed.body.map((x, i) => {
 
+   
+
     let obj = {};
 
     x.filter((z, index) => {
+      
       return obj[keys[index]] = z
     });
 
     if (x.length > 1) result.push(obj)
 
   });
+  
 
-  await driver.insertItem(
-    PRICELIST_DB_NAME,
-    {
-      created_at: created_at,
-      created_by:TEMP_USER,
-      updated_at:"",
-      updated_by:created_at,
-      price_date:created_at,
-      lista: result
+  const d = checkDate(result, result.length, result[0].price_date);
+  console.log(d)
 
-    }
-  );
+  // await driver.insertItem(
+  //   PRICELIST_DB_NAME,
+  //   {
+  //     created_at: created_at,
+  //     created_by:TEMP_USER,
+  //     updated_at:"",
+  //     updated_by:created_at,
+  //     price_date:created_at,
+  //     lista: result
+
+  //   }
+  // );
 
 
 })
@@ -147,3 +159,13 @@ ipcMain.handle("retriveLatestPrice", async (event, payload) => {
 
 })
 
+
+
+ipcMain.handle("retriveSessions",async()=>{
+  const IS_ACTIVE_DESIGN = "_design/_design/_view/is_active";
+  const SESSION_DB = "sessions";
+  const data = await driver.findAll(SESSION_DB,IS_ACTIVE_DESIGN);
+
+
+  return data.map(x=>x.key);
+})

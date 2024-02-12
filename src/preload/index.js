@@ -6,7 +6,8 @@ const api = {
   selectFile:()=>electronAPI.ipcRenderer.invoke("selectFile"),
   loadSheet:payload=>electronAPI.ipcRenderer.invoke("loadSheet",JSON.stringify(payload)),
   addUser:payload=>electronAPI.ipcRenderer.invoke("addUser",payload),
-  retriveLatestPrice:()=>electronAPI.ipcRenderer.invoke("retriveLatestPrice")
+  retriveLatestPrice:()=>electronAPI.ipcRenderer.invoke("retriveLatestPrice"),
+  retriveSessions:()=>electronAPI.ipcRenderer.invoke("retriveSessions")
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

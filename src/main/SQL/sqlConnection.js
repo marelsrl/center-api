@@ -2,7 +2,7 @@ import sql from 'mssql';
 
 const USER="bizerba"
 const PASS="desio172"
-const SERVER="server\\SQLEXPRESS"
+const SERVER="server\\MSSQLSERVER"
 const DATABASE="MultiTraceConnect"
 
 
