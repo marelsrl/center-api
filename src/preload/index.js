@@ -7,7 +7,9 @@ const api = {
   loadSheet:payload=>electronAPI.ipcRenderer.invoke("loadSheet",JSON.stringify(payload)),
   addUser:payload=>electronAPI.ipcRenderer.invoke("addUser",payload),
   retriveLatestPrice:()=>electronAPI.ipcRenderer.invoke("retriveLatestPrice"),
-  retriveSessions:()=>electronAPI.ipcRenderer.invoke("retriveSessions")
+  retriveSessions:()=>electronAPI.ipcRenderer.invoke("retriveSessions"),
+  showError:msg=>electronAPI.ipcRenderer.send("showError",msg),
+  showMessage:payload=>electronAPI.ipcRenderer.send("showMessage",payload)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

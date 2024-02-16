@@ -15,8 +15,18 @@ function FileUploader() {
 
   const confirm = () => {
 
-    window.api.loadSheet(data)
-    setFile({});
+    window.api.loadSheet(data).then(res=>{
+      console.log(res)
+      if(res.status == "errore") return window.api.showError(res.message);
+      window.api.showMessage({
+        title:"successo",
+        message:res.message
+      });
+      setFile({});
+    }).catch(err=>{
+      window.api.showError(err.message);
+    })
+    
   }
 
   useEffect(() => {

@@ -86,8 +86,8 @@ server.post("/api/update-prices", async (req, res) => {
    
     let nq = checkDate(check,toBe,data)
 
-    // ! QUESTA DUNZIONE RITORNA > 0 SE CE' UN INDEX DI UN PRODOTTO CHE NON RISPETTA LA DATA MEDIA
-    if (nq > 0) return res.json({ status: "errore", message: `trovata un incongruenza con le date dei prezzi alla riga all'articolo con product_id ${check[nq].product_id}` })
+    // ! QUESTA DUNZIONE RITORNA true SE CE' UN INDEX DI UN PRODOTTO CHE NON RISPETTA LA DATA MEDIA
+    if (nq) return res.json({ status: "errore", message: `trovata un incongruenza con le date dei prezzi` })
 
 
 

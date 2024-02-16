@@ -34,9 +34,11 @@ const driver = new couchDb(credentials);
 const PORT = 3000;
 const DATE_FORMAT = "yyyy-MM-DD";
 
+let mainWindow;
+
 function createWindow() {
 
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -105,43 +107,56 @@ ipcMain.handle("loadSheet", async (event, payload) => {
   // const created_at = new Date().toLocaleDateString();
   const created_at = moment().format(DATE_FORMAT);
   const TEMP_USER = "user";
-  
- 
+
+
   const parsed = JSON.parse(payload);
 
   let keys = parsed.header;
   let result = []
   parsed.body.map((x, i) => {
 
-   
-
     let obj = {};
 
     x.filter((z, index) => {
-      
+
       return obj[keys[index]] = z
     });
 
     if (x.length > 1) result.push(obj)
 
   });
-  
 
-  const d = checkDate(result, result.length, result[0].price_date);
-  console.log(d)
 
-  // await driver.insertItem(
-  //   PRICELIST_DB_NAME,
-  //   {
-  //     created_at: created_at,
-  //     created_by:TEMP_USER,
-  //     updated_at:"",
-  //     updated_by:created_at,
-  //     price_date:created_at,
-  //     lista: result
+  const nq = checkDate(result, result.length, result[0].price_date);
+  if (nq) return { status: "errore", message: "trovata un incongruenza con le date dei prezzi" }
 
-  //   }
-  // );
+
+
+  let date = result[0].price_date;
+  console.log("data caricata: ", date);
+
+  const price_list_by_date = await driver.findAll("central", "_design/prices/_view/price_list_by_date");
+
+  const found_by_date = await price_list_by_date.find(x => x.key == date)
+
+
+
+  if (found_by_date) return { status: "success", message: "questa data esiste, quindi è da aggiornare" }
+
+  await driver.insertItem(
+    PRICELIST_DB_NAME,
+    {
+      created_at: created_at,
+      created_by: TEMP_USER,
+      updated_at: "",
+      updated_by: created_at,
+      price_date: created_at,
+      lista: result
+
+    }
+  );
+
+  return { status: "success", message: "il prezziario è stato inserito con successo" }
 
 
 })
@@ -155,17 +170,31 @@ ipcMain.handle("addUser", (event, payload) => {
 
 ipcMain.handle("retriveLatestPrice", async (event, payload) => {
 
-  return JSON.stringify(await driver.findAll("central","_design/prices/_view/all"))
+  return JSON.stringify(await driver.findAll("central", "_design/prices/_view/all"))
 
 })
 
 
 
-ipcMain.handle("retriveSessions",async()=>{
+ipcMain.handle("retriveSessions", async () => {
   const IS_ACTIVE_DESIGN = "_design/_design/_view/is_active";
   const SESSION_DB = "sessions";
-  const data = await driver.findAll(SESSION_DB,IS_ACTIVE_DESIGN);
+  const data = await driver.findAll(SESSION_DB, IS_ACTIVE_DESIGN);
 
 
-  return data.map(x=>x.key);
+  return data.map(x => x.key);
+})
+
+// ! alerts
+
+ipcMain.on("showError", (e, msg) => {
+  dialog.showErrorBox("Errore", msg);
+})
+
+
+ipcMain.on("showMessage", (e, { title, message }) => {
+  dialog.showMessageBox(mainWindow, {
+    title,
+    message
+  })
 })

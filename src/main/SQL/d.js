@@ -6,13 +6,13 @@ const TEMPLATE = [
     "product_group_number__WGNR",
     "plu_department_number__PNAB",
     "scale_id__WANR",
-    "single_value_in_cents__UMSA", // singolo pachetto
+    "single_value_in_cents__UMSA", // singolo pacchetto
     "ticket_type__BNKD",
     "scale_id__WANR_HEAD",
     "constant__PTYP",
     "special_offer_id__AKNR",
     "fiscal_code_IVA__MWNR",
-    "package_value_in_cents__UMSA_HEAD", // PACKEGE VALUE
+    "package_value_in_cents__UMSA_HEAD", // PACKAGE VALUE
     "cancellation_status__STST",
     "cancellation_status__STST_HEAD",
     "discount_value_in_cents__RAPO", // DISCOUNT
@@ -30,7 +30,7 @@ const TEMPLATE = [
     "opened_ticket_at_date_time__ZEIS",
     "issued_ticket_at_date_time__ZEIE",
     "batch_identifier__HIDE",
-    "catalogued_ean__EAN_POS",
+    "catalogued_ean__EAN_POS", // PRODUCT EAN
     "ean_foot_unused__EAN_FOOT",
     "items_count__TOTAL_ITEMS",
     "raty_unused__RATY",
@@ -52,6 +52,8 @@ Tipologia di record
 2 / 16 = Voce
 10000 = Chiusura
 */
+
+// 2 01 901  N
 
 // Tipo movimento (S = Sacchetto, T = Single Ticket o Prezzatura)
 export default function SqlToJson(obj) {
@@ -89,7 +91,9 @@ export default function SqlToJson(obj) {
             unit_price__PREI:x.unit_price__PREI,
             quantity__POST:x.quantity__POST,
             item_description__TESTO1:x.item_description__TESTO1.trim(),
-            entry_id__ID:x.entry_id__ID
+            entry_id__ID:x.entry_id__ID,
+            catalogued_ean__EAN_POS:x.catalogued_ean__EAN_POS,
+            plu__PLNR:x.plu__PLNR
         }
     })
 
