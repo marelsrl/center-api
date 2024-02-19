@@ -1,0 +1,35 @@
+create
+
+curl -X POST \
+  http://username:password@localhost:5984/startup1 \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "_id": "document_id_here",
+    "name": "John Doe",
+    "age": 30
+}'
+
+update
+
+curl -X PUT \
+  http://username:password@localhost:5984/startup1/document_id_here/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Updated Name",
+    "age": 35
+}'
+
+
+const axios = require('axios');
+
+axios.post('http://username:password@localhost:5984/startup1', {
+  "_id": "document_id_here",
+  "name": "John Doe",
+  "age": 30
+})
+.then(response => {
+  console.log('Document created successfully:', response.data);
+})
+.catch(error => {
+  console.error('Error creating document:', error);
+});
