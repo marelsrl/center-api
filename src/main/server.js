@@ -1,5 +1,5 @@
 import express from 'express';
-import { validateLogin,checkDate } from './utils';
+import { validateLogin, checkDate } from './utils';
 import couchDb from './database';
 import bcrypt from 'bcrypt';
 import cors from 'cors';
@@ -7,8 +7,11 @@ import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 
 import { config, sql } from './SQL/sqlConnection.js'
-import SqlToJson from './SQL/d.js';
+import { SqlToJson, buildSQL } from './SQL/d.js';
 import moment from 'moment';
+
+
+
 
 const server = express();
 
@@ -53,12 +56,14 @@ server.post("/api/login", (req, res) => {
 
 
 
-server.get("/api/bizerba/scontrino/:id", (req, res) => {
-    
+server.get("/api/bizerba/scontrino/:id/rep/:n", (req, res) => {
+
+    console.log(req.params);
+
     sql.connect(config, err => {
         if (err) return res.json({ status: "error", message: err.message });
         const request = new sql.Request();
-        const SQL = `SELECT * FROM [dbo].[SCONTRINI] WHERE BNNR=${req.params.id}`
+        const SQL = `SELECT * FROM [dbo].[SCONTRINI] WHERE BNNR=${req.params.id} AND PNAB=${parseInt(req.params.n)}`
         request.query(SQL, (err, result) => {
             if (err) return res.json({ status: "error", message: err.message });
             let target = result.recordset
@@ -83,8 +88,8 @@ server.post("/api/update-prices", async (req, res) => {
 
     let data = check[0].price_date;
 
-   
-    let nq = checkDate(check,toBe,data)
+
+    let nq = checkDate(check, toBe, data)
 
     // ! QUESTA DUNZIONE RITORNA true SE CE' UN INDEX DI UN PRODOTTO CHE NON RISPETTA LA DATA MEDIA
     if (nq) return res.json({ status: "errore", message: `trovata un incongruenza con le date dei prezzi` })
@@ -103,15 +108,30 @@ server.post("/api/update-prices", async (req, res) => {
         res.json({ message: "da aggiornare" })
 
     } else {
-        let dat = {
-            created_at: created_at,
-            created_by: TEMP_USER,
-            updated_at: created_at,
-            updated_by: TEMP_USER,
-            price_date: check[0].price_date,
-            lista: check,
-        }
-        driver.insertItem("central", dat).then(_ => res.json({ status: "successo", message: `lista della data ${data} inserita con successo` })).catch(err => res.json({ status: "errore", message: err.message }));
+        // let dat = {
+        //     created_at: created_at,
+        //     created_by: TEMP_USER,
+        //     updated_at: created_at,
+        //     updated_by: TEMP_USER,
+        //     price_date: check[0].price_date,
+        //     lista: check,
+        // }
+        const SQL = await buildSQL(check);
+
+
+        sql.connect(config, err => {
+            if (err) return res.json({ status: "error", message: err.message });
+            const request = new sql.Request();
+            request.query(SQL, (err, result) => {
+                if (err) return res.json({ status: "error", message: err.message });
+                let target = result.recordset
+                if (!target) return res.json({ status: "error", message: "no item found" });
+
+                const processed = SqlToJson(target);
+                // console.log(processed);
+                res.json({ status: "success", res: processed }); //data:SqlToJson(target)
+            })
+        })
     }
 
 

@@ -7,15 +7,15 @@ import moment from 'moment';
 
 // server
 import server from './server.js';
+import fs from 'fs'
 
 // database
 import couchDb from "./database.js";
 import bcrypt from 'bcrypt';
 
-import fs from 'fs'
 import { checkDate } from './utils.js';
-
-//
+import { HEAD, buildOneSQL, buildSQL } from './SQL/d.js';
+import { sql, config } from './SQL/sqlConnection.js';
 
 const credentials = {
   user: "admin",
@@ -113,6 +113,7 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
   let keys = parsed.header;
   let result = []
+  
   parsed.body.map((x, i) => {
 
     let obj = {};
@@ -143,6 +144,53 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
   if (found_by_date) return { status: "success", message: "questa data esiste, quindi è da aggiornare" }
 
+  try {
+    // await driver.insertItem(
+    //   PRICELIST_DB_NAME,
+    //   {
+    //     created_at: created_at,
+    //     created_by: TEMP_USER,
+    //     updated_at: "",
+    //     updated_by: created_at,
+    //     price_date: created_at,
+    //     lista: result
+
+    //   }
+    // );
+
+    let groceryPrices = [...result].filter(x=>x.sell_type == "2");
+
+    
+
+   
+  
+
+    
+    // fs.writeFileSync("ciao.txt",SQL)
+    // return console.log(SQL)
+
+    sql.connect(config, err=> {
+      if (err) return res.json({ status: "error", message: err.message });
+      const request = new sql.Request();
+      for(let i = 0; i<groceryPrices.length; i++){
+        const SQL =  buildOneSQL(groceryPrices[i]);
+
+
+        request.query(SQL, (err, result) => {
+          if (err) return console.log({ status: "error", message:err.message, sql:SQL});
+          // let target = result.recordset
+          // if (!target) return res.json({ status: "error", message: "no item found" });
+  
+          // const processed = bui(target);
+          // console.log(processed);
+          // console.log(`inserted grocery products ${i} into scale 🚀`) //data:SqlToJson(target)
+        })
+      }
+
+     
+    })
+
+    
   await driver.insertItem(
     PRICELIST_DB_NAME,
     {
@@ -150,13 +198,19 @@ ipcMain.handle("loadSheet", async (event, payload) => {
       created_by: TEMP_USER,
       updated_at: "",
       updated_by: created_at,
-      price_date: created_at,
+      price_date: date,
       lista: result
 
     }
   );
 
-  return { status: "success", message: "il prezziario è stato inserito con successo" }
+    return { status: "success", message: "il prezziario è stato inserito con successo" }
+  } catch (err) {
+    return { status: "error", message: err.message }
+    
+  }
+
+
 
 
 })
