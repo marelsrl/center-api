@@ -18,8 +18,8 @@ import {buildOneSQL } from './SQL/d.js';
 import { sql, config } from './SQL/sqlConnection.js';
 
 const credentials = {
-  user: "admin",
-  pass: "admin"
+  user: "super",
+  pass: "314159"
 };
 
 const PRICELIST_DB_NAME = "central";
@@ -139,7 +139,7 @@ ipcMain.handle("loadSheet", async (event, payload) => {
   const price_list_by_date = await driver.findAll("central", "_design/prices/_view/price_list_by_date");
 
   const found_by_date = await price_list_by_date.find(x => x.key == date)
-
+ console.log(price_list_by_date)
 
 
   // if (found_by_date) return { status: "success", message: "questa data esiste, quindi è da aggiornare" }

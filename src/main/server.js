@@ -16,8 +16,8 @@ import moment from 'moment';
 const server = express();
 
 const credentials = {
-    user: "admin",
-    pass: "admin"
+    user: "super",
+    pass: "314159"
 };
 
 const DATE_FORMAT = "yyyy-MM-DD";
