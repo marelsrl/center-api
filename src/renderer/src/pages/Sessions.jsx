@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+
 // components
 import SessionBlock from "../components/SessionBlock";
 
-function Sessions() {
+function Sessions({cartState}) {
 
     let [session, setSessions] = useState([]);
 
+    
     useEffect(() => {
+        console.log(cartState)
         window.api.retriveSessions().then(res => {
             setSessions(res);
         })
@@ -19,8 +22,8 @@ function Sessions() {
 
             <Link to="/" className="absolute left-5 top-5">indietro</Link>
             {
-                session.length &&
-                session.map(x => <SessionBlock data={x} />)
+                cartState.length > 0 &&
+                cartState.map((x,i) => <SessionBlock key={i} data={x} />)
             }
 
         </div>

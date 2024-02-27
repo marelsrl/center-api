@@ -13,8 +13,8 @@ import fs from 'fs'
 import couchDb from "./database.js";
 import bcrypt from 'bcrypt';
 
-import { checkDate } from './utils.js';
-import { HEAD, buildOneSQL, buildSQL } from './SQL/d.js';
+// import { checkDate } from './utils.js';
+import {buildOneSQL } from './SQL/d.js';
 import { sql, config } from './SQL/sqlConnection.js';
 
 const credentials = {
@@ -128,8 +128,8 @@ ipcMain.handle("loadSheet", async (event, payload) => {
   });
 
 
-  const nq = checkDate(result, result.length, result[0].price_date);
-  if (nq) return { status: "errore", message: "trovata un incongruenza con le date dei prezzi" }
+  // const nq = checkDate(result, result.length, result[0].price_date);
+  // if (nq) return { status: "errore", message: "trovata un incongruenza con le date dei prezzi" }
 
 
 
@@ -142,33 +142,25 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
 
 
-  if (found_by_date) return { status: "success", message: "questa data esiste, quindi è da aggiornare" }
+  // if (found_by_date) return { status: "success", message: "questa data esiste, quindi è da aggiornare" }
 
   try {
-    // await driver.insertItem(
-    //   PRICELIST_DB_NAME,
-    //   {
-    //     created_at: created_at,
-    //     created_by: TEMP_USER,
-    //     updated_at: "",
-    //     updated_by: created_at,
-    //     price_date: created_at,
-    //     lista: result
+    await driver.insertItem(
+      PRICELIST_DB_NAME,
+      {
+        created_at: created_at,
+        created_by: TEMP_USER,
+        updated_at: "",
+        updated_by: created_at,
+        price_date: created_at,
+        lista: result
 
-    //   }
-    // );
+      }
+    );
 
     let groceryPrices = [...result].filter(x=>x.sell_type == "2");
 
     
-
-   
-  
-
-    
-    // fs.writeFileSync("ciao.txt",SQL)
-    // return console.log(SQL)
-
     sql.connect(config, err=> {
       if (err) return res.json({ status: "error", message: err.message });
       const request = new sql.Request();

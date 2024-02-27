@@ -13,6 +13,9 @@ class Database{
         
     }
 
+
+
+    
     async existDb(dbName){
         let tmp = await this.listDb();
         return tmp.includes(dbName.toLowerCase())

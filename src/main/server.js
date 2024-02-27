@@ -26,7 +26,7 @@ const DATE_FORMAT = "yyyy-MM-DD";
 const driver = new couchDb(credentials);
 
 
-
+  
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json({ limit: "100mb" }));
 server.use(cors())
@@ -89,10 +89,10 @@ server.post("/api/update-prices", async (req, res) => {
     let data = check[0].price_date;
 
 
-    let nq = checkDate(check, toBe, data)
+    // let nq = checkDate(check, toBe, data)
 
-    // ! QUESTA DUNZIONE RITORNA true SE CE' UN INDEX DI UN PRODOTTO CHE NON RISPETTA LA DATA MEDIA
-    if (nq) return res.json({ status: "errore", message: `trovata un incongruenza con le date dei prezzi` })
+    // // ! QUESTA DUNZIONE RITORNA true SE CE' UN INDEX DI UN PRODOTTO CHE NON RISPETTA LA DATA MEDIA
+    // if (nq) return res.json({ status: "errore", message: `trovata un incongruenza con le date dei prezzi` })
 
 
 
@@ -103,36 +103,35 @@ server.post("/api/update-prices", async (req, res) => {
 
 
 
+    const SQL = await buildSQL(check);
 
-    if (found_by_date) {
-        res.json({ message: "da aggiornare" })
-
-    } else {
-        // let dat = {
-        //     created_at: created_at,
-        //     created_by: TEMP_USER,
-        //     updated_at: created_at,
-        //     updated_by: TEMP_USER,
-        //     price_date: check[0].price_date,
-        //     lista: check,
-        // }
-        const SQL = await buildSQL(check);
-
-
-        sql.connect(config, err => {
+    const PRICELIST_DB_NAME = "central";
+    sql.connect(config, err => {
+        if (err) return res.json({ status: "error", message: err.message });
+        const request = new sql.Request();
+        request.query(SQL, async (err, result) => {
             if (err) return res.json({ status: "error", message: err.message });
-            const request = new sql.Request();
-            request.query(SQL, (err, result) => {
-                if (err) return res.json({ status: "error", message: err.message });
-                let target = result.recordset
-                if (!target) return res.json({ status: "error", message: "no item found" });
+            let target = result.recordset
+            if (!target) return res.json({ status: "error", message: "no item found" });
 
-                const processed = SqlToJson(target);
-                // console.log(processed);
-                res.json({ status: "success", res: processed }); //data:SqlToJson(target)
-            })
+            const processed = SqlToJson(target);
+            let dat = {
+                created_at: created_at,
+                created_by: TEMP_USER,
+                updated_at: created_at,
+                updated_by: TEMP_USER,
+                price_date: check[0].price_date,
+                lista: check,
+            }
+            await driver.insertItem(
+                PRICELIST_DB_NAME,
+                dat
+            );
+
+            res.json({ status: "success", res: processed }); //data:SqlToJson(target)
         })
-    }
+    })
+    // }
 
 
 })
