@@ -4,7 +4,7 @@ function SessionBlock({ data }) {
 
     return (
         <div className="w-[300px] h-[300px] shadow-xl flex items-center justify-center flex-col">
-            {/* <h1 className="mb-10 text-3xl">{data._id}</h1> */}
+            <h1 className="mb-10 text-3xl">{data._id}</h1>
             {
                 data.active ?
                     <p className="text-green-500">Elabrando conto ✅</p> :

@@ -18,8 +18,8 @@ import {buildOneSQL } from './SQL/d.js';
 import { sql, config } from './SQL/sqlConnection.js';
 
 const credentials = {
-  user: "super",
-  pass: "314159"
+  user: "admin",
+  pass: "admin"
 };
 
 const PRICELIST_DB_NAME = "central";
@@ -223,9 +223,9 @@ ipcMain.handle("retriveLatestPrice", async (event, payload) => {
 
 
 ipcMain.handle("retriveSessions", async () => {
-  const IS_ACTIVE_DESIGN = "_design/_design/_view/is_active";
+  const ALL_DESIGN = "_design/_list/_view/all";
   const SESSION_DB = "sessions";
-  const data = await driver.findAll(SESSION_DB, IS_ACTIVE_DESIGN);
+  const data = await driver.findAll(SESSION_DB, ALL_DESIGN);
 
 
   return data.map(x => x.key);

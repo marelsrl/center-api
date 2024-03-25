@@ -15,22 +15,31 @@ import PouchDB from "pouchdb/dist/pouchdb";
 
 
 export default function App() {
-    let localCartDB = new PouchDB('localCartDB');
-    var remoteCartDB = new PouchDB('http://admin:admin@SERVER:5984/carts')
+    let localSessionsDB = new PouchDB('localSessionsDB');
+    var remoteSessionsDB = new PouchDB('http://admin:admin@SERVER:5984/sessions');
 
-    let [cartState, setCartState] = useState([]);
+    let [sessionsState, setSessionsState] = useState([]);
+
+
 
 
     useEffect(() => {
-        localCartDB.replicate.from(remoteCartDB, {
+
+        localSessionsDB.allDocs({ include_docs: true }).then(res => {
+            console.error(res.rows.map(x => x.doc));
+            setSessionsState(res.rows.filter(x => !x.doc.language));
+        });
+        
+        localSessionsDB.replicate.from(remoteSessionsDB, {
             live: true,
             retry: true
         }).on('change', function (change) {
-            
-            localCartDB.allDocs({ include_docs: true }).then(res => {
+
+            localSessionsDB.allDocs({ include_docs: true }).then(res => {
                 console.error(res.rows.map(x => x.doc));
-                setCartState(res.rows.map(x => x.doc))
+                setSessionsState(res.rows.filter(x => !x.doc.language));
             })
+
         }).on('paused', function (info) {
             console.log('replication was paused, usually because of a lost connection', info)
         }).on('active', function (info) {
@@ -39,8 +48,12 @@ export default function App() {
             console.log(err);
             // reject(err)
         });
-      
+
     }, [])
+
+    useEffect(() => {
+        console.log(sessionsState);
+    }, [sessionsState]);
 
     return (
         <Router>
@@ -49,7 +62,7 @@ export default function App() {
                 <Route path='/file_uploader' element={<FileUploader />} />
                 <Route path='/register_user' element={<RegisterUser />} />
                 <Route path='/check_latest_price' element={<CheckLatestPrice />} />
-                <Route path='/sessions' element={<Sessions cartState={cartState} />} />
+                <Route path='/sessions' element={<Sessions sessionsState={sessionsState} />} />
             </Routes>
         </Router>
     )
