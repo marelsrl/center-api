@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
@@ -9,7 +10,8 @@ const api = {
   retriveLatestPrice:()=>electronAPI.ipcRenderer.invoke("retriveLatestPrice"),
   retriveSessions:()=>electronAPI.ipcRenderer.invoke("retriveSessions"),
   showError:msg=>electronAPI.ipcRenderer.send("showError",msg),
-  showMessage:payload=>electronAPI.ipcRenderer.send("showMessage",payload)
+  showMessage:payload=>electronAPI.ipcRenderer.send("showMessage",payload),
+  ipcRenderer:electronAPI.ipcRenderer
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
