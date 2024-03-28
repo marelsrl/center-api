@@ -10,8 +10,12 @@ import Sessions from './pages/Sessions.jsx';
 
 // components
 import Menu from './components/menu.jsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import PouchDB from "pouchdb/dist/pouchdb";
+
+// services
+import { GlobalContext } from './serices/GlobalContext.js';
+
 
 
 export default function App() {
@@ -21,15 +25,13 @@ export default function App() {
     let [sessionsState, setSessionsState] = useState([]);
 
 
-
-
     useEffect(() => {
 
         localSessionsDB.allDocs({ include_docs: true }).then(res => {
             console.error(res.rows.map(x => x.doc));
             setSessionsState(res.rows.filter(x => !x.doc.language));
         });
-        
+
         localSessionsDB.replicate.from(remoteSessionsDB, {
             live: true,
             retry: true
@@ -56,14 +58,18 @@ export default function App() {
     }, [sessionsState]);
 
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Menu />} />
-                <Route path='/file_uploader' element={<FileUploader />} />
-                <Route path='/register_user' element={<RegisterUser />} />
-                <Route path='/check_latest_price' element={<CheckLatestPrice />} />
-                <Route path='/sessions' element={<Sessions sessionsState={sessionsState} />} />
-            </Routes>
-        </Router>
+        <GlobalContext.Provider value={{
+            sessionsState
+        }}>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Menu />} />
+                    <Route path='/file_uploader' element={<FileUploader />} />
+                    <Route path='/register_user' element={<RegisterUser />} />
+                    <Route path='/check_latest_price' element={<CheckLatestPrice />} />
+                    <Route path='/sessions' element={<Sessions/>} />
+                </Routes>
+            </Router>
+        </GlobalContext.Provider>
     )
 }
