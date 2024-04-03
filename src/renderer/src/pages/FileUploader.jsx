@@ -88,7 +88,7 @@ function FileUploader() {
 
   return (
     <main id='fileUploader'>
-      <Link to="/" className="absolute left-5 top-5">indietro</Link>
+      {/* <Link to="/" className="absolute left-5 top-5">indietro</Link> */}
       <Form.Group style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         <Form.Label>seleziona un prezziario</Form.Label>
         <Form.Control

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Carousel from 'react-bootstrap/Carousel';
 
-import Block from "../components/excelTable";
+import Table from "../components/Table";
 
 function PriceList() {
 
@@ -23,7 +23,6 @@ function PriceList() {
     return (
 
         <div>
-            <Link to="/" className="absolute left-5 top-5">indietro</Link>
             <Carousel slide={false} style={{overflowX:"scroll", height: "100vh", width: "100vw" }} >
                 {
                     tableData.map(x => {
@@ -32,7 +31,7 @@ function PriceList() {
                                 <center>
                                     <h1 style={{fontWeight:700,fontSize:"2rem"}}>{x.key.price_date}</h1>
                                 </center>
-                                <Block data={x.key.lista}/>
+                                <Table data={x.key.lista}/>
                             </Carousel.Item>
                         )
                     })

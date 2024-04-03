@@ -5,16 +5,18 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 // PAGES
 import FileUploader from './pages/FileUploader.jsx';
 import RegisterUser from './pages/RegisterUser.jsx';
-import CheckLatestPrice from './pages/PriceList.jsx';
 import Sessions from './pages/Sessions.jsx';
+import Table from './pages/PriceList.jsx';
 
 // components
-import Menu from './components/menu.jsx';
-import { useEffect, useState, useContext } from 'react';
-import PouchDB from "pouchdb/dist/pouchdb";
+import { useEffect, useState } from 'react';
+import Navbar from './components/Navbar.jsx';
+
 
 // services
 import { GlobalContext } from './serices/GlobalContext.js';
+import PouchDB from "pouchdb/dist/pouchdb";
+import LandingPage from './pages/Landing.jsx';
 
 
 
@@ -62,11 +64,13 @@ export default function App() {
             sessionsState
         }}>
             <Router>
+                <Navbar/>
+
                 <Routes>
-                    <Route path="/" element={<Menu />} />
+                    <Route path="/" element={<LandingPage />} />
                     <Route path='/file_uploader' element={<FileUploader />} />
                     <Route path='/register_user' element={<RegisterUser />} />
-                    <Route path='/check_latest_price' element={<CheckLatestPrice />} />
+                    <Route path='/check_latest_price' element={<Table />} />
                     <Route path='/sessions' element={<Sessions/>} />
                 </Routes>
             </Router>

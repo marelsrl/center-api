@@ -1,7 +1,9 @@
 import { Table } from "react-bootstrap";
 
 function ExcelTable({ data }) {
-    const header = Object.keys(data[0]).slice(0,12);
+  
+  const header = Object.keys(data[0]).slice(0,12);
+  
 
     return (
         <Table striped bordered hover>

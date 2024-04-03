@@ -134,12 +134,11 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
 
   let date = result[0].price_date;
-  console.log("data caricata: ", date);
+  
 
-  const price_list_by_date = await driver.findAll("central", "_design/prices/_view/price_list_by_date");
+  // const price_list_by_date = await driver.findAll("central", "_design/prices/_view/price_list_by_date");
 
-  const found_by_date = await price_list_by_date.find(x => x.key == date)
- console.log(price_list_by_date)
+  // const found_by_date = await price_list_by_date.find(x => x.key == date)
 
 
   // if (found_by_date) return { status: "success", message: "questa data esiste, quindi è da aggiornare" }
@@ -161,12 +160,12 @@ ipcMain.handle("loadSheet", async (event, payload) => {
     let groceryPrices = [...result].filter(x=>x.sell_type == "2");
 
     
-    sql.connect(config, err=> {
+    sql.connect(config, async err=> {
       if (err) return res.json({ status: "error", message: err.message });
       const request = new sql.Request();
+      await request.query("TRUNCATE table [dbo].[plu]")
       for(let i = 0; i<groceryPrices.length; i++){
         const SQL =  buildOneSQL(groceryPrices[i]);
-
 
         request.query(SQL, (err, result) => {
           if (err) return console.log({ status: "error", message:err.message, sql:SQL});
@@ -182,19 +181,7 @@ ipcMain.handle("loadSheet", async (event, payload) => {
      
     })
 
-    
-  await driver.insertItem(
-    PRICELIST_DB_NAME,
-    {
-      created_at: created_at,
-      created_by: TEMP_USER,
-      updated_at: "",
-      updated_by: created_at,
-      price_date: date,
-      lista: result
 
-    }
-  );
 
     return { status: "success", message: "il prezziario è stato inserito con successo" }
   } catch (err) {

@@ -1,24 +1,18 @@
-import { Link } from "react-router-dom";
+import MenuButton from "./MenuButton";
+
+
 function Menu() {
 
     return (
-        <div className="min-h-screen min-w-screen flex items-center justify-center">
+        <div className="min-h-screen min-w-screen flex items-center justify-around flex-col">
             <ul style={{listStyleType:"circle",textDecoration:"underline"}}>
-                <Link to="/file_uploader">
-                    <li >upload prices</li>
-                </Link>
+                <MenuButton title="upload prices" route="/file_uploader"/>
                 <br/>
-                <Link to="/register_user">
-                    <li>register user</li>
-                </Link>
+                <MenuButton title="register user" route="/register_user"/>
                 <br/>
-                <Link to="/check_latest_price">
-                    <li>check latest price</li>
-                </Link>
+                <MenuButton title="check latest price" route="/check_latest_price"/>
                 <br/>
-                <Link to="/sessions">
-                    <li>sessions</li>
-                </Link>
+               <MenuButton title="sessions" route="/sessions" />
             </ul>
         </div>
     )
