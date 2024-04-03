@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -22,36 +23,63 @@ import LandingPage from './pages/Landing.jsx';
 
 export default function App() {
     let localSessionsDB = new PouchDB('localSessionsDB');
-    var remoteSessionsDB = new PouchDB('http://admin:admin@SERVER:5984/sessions');
+    
 
     let [sessionsState, setSessionsState] = useState([]);
+    
 
+   
 
     useEffect(() => {
 
-        localSessionsDB.allDocs({ include_docs: true }).then(res => {
-            console.error(res.rows.map(x => x.doc));
-            setSessionsState(res.rows.filter(x => !x.doc.language));
-        });
+// <<<<<<< HEAD
+//         localSessionsDB.allDocs({ include_docs: true }).then(res => {
+//             console.error(res.rows.map(x => x.doc));
+//             setSessionsState(res.rows.filter(x => !x.doc.language));
+//         });
 
-        localSessionsDB.replicate.from(remoteSessionsDB, {
-            live: true,
-            retry: true
-        }).on('change', function (change) {
+//         localSessionsDB.replicate.from(remoteSessionsDB, {
+//             live: true,
+//             retry: true
+//         }).on('change', function (change) {
+
+        window.api.ipcRenderer.invoke('getHostName').then((host)=>{
+            console.log('host', host)
+            
+            return host
+        }).then(host=>{
+
+            let dbUrl = `http://admin:admin@${host}:5984/sessions`;
+    
+            var remoteSessionsDB=new PouchDB(dbUrl);
 
             localSessionsDB.allDocs({ include_docs: true }).then(res => {
                 console.error(res.rows.map(x => x.doc));
                 setSessionsState(res.rows.filter(x => !x.doc.language));
-            })
+            });
+            
+            localSessionsDB.replicate.from(remoteSessionsDB, {
+                live: true,
+                retry: true
+            }).on('change', function (change) {
+    
+                localSessionsDB.allDocs({ include_docs: true }).then(res => {
+                    console.error(res.rows.map(x => x.doc));
+                    setSessionsState(res.rows.filter(x => !x.doc.language));
+                })
+    
+            }).on('paused', function (info) {
+                console.log('replication was paused, usually because of a lost connection', info)
+            }).on('active', function (info) {
+                console.log('// replication was resumed', info)
+            }).on('error', function (err) {
+                console.log(err);
+                // reject(err)
+            });
 
-        }).on('paused', function (info) {
-            console.log('replication was paused, usually because of a lost connection', info)
-        }).on('active', function (info) {
-            console.log('// replication was resumed', info)
-        }).on('error', function (err) {
-            console.log(err);
-            // reject(err)
-        });
+        })
+
+        
 
     }, [])
 

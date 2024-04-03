@@ -1,7 +1,9 @@
+/* eslint-disable prettier/prettier */
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import os from 'os'
 
 import moment from 'moment';
 
@@ -230,4 +232,8 @@ ipcMain.on("showMessage", (e, { title, message }) => {
     title,
     message
   })
+})
+
+ipcMain.handle('getHostName', async ()=>{
+  return os.hostname()
 })
