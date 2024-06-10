@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         // const tmpName = uploadDir + file.originalname
         if (!existsSync(file.originalname)) {
-            console.log(file.originalname);
+            // console.log(file.originalname);
             cb(null, file.originalname)
         }
         cb(null, file.originalname)

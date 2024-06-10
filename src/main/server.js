@@ -42,6 +42,8 @@ server.post("/api/login", (req, res) => {
 
         if (!response) return res.status(200).json({ status: "error", message: `user with employee_id ${employee_id} not found` })
 
+        // ! DEGUB consente sempre l'accesso
+        return res.status(200).json({ status: "success", user: { ...response.key, token: jwt.sign(employee_id, "resg45ythbs.3456345.-") } })
         if (bcrypt.compareSync(password, response.key.password)) {
             let tmp = response.key;
             delete tmp.password

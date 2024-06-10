@@ -32,16 +32,6 @@ export default function App() {
 
     useEffect(() => {
 
-// <<<<<<< HEAD
-//         localSessionsDB.allDocs({ include_docs: true }).then(res => {
-//             console.error(res.rows.map(x => x.doc));
-//             setSessionsState(res.rows.filter(x => !x.doc.language));
-//         });
-
-//         localSessionsDB.replicate.from(remoteSessionsDB, {
-//             live: true,
-//             retry: true
-//         }).on('change', function (change) {
 
         window.api.ipcRenderer.invoke('getHostName').then((host)=>{
             console.log('host', host)

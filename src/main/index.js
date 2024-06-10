@@ -16,7 +16,7 @@ import couchDb from "./database.js";
 import bcrypt from 'bcrypt';
 
 // import { checkDate } from './utils.js';
-import {buildOneSQL } from './SQL/d.js';
+import { buildOneSQL } from './SQL/d.js';
 import { sql, config } from './SQL/sqlConnection.js';
 
 const credentials = {
@@ -115,7 +115,7 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
   let keys = parsed.header;
   let result = []
-  
+
   parsed.body.map((x, i) => {
 
     let obj = {};
@@ -130,13 +130,31 @@ ipcMain.handle("loadSheet", async (event, payload) => {
   });
 
 
+  for (let el of result) {
+    
+    switch(el.promo_type){
+      case "1": 
+        // el.calculated_price = (Number(el.price) * Number(el.discount_by_percentage)) / 100; // percentage
+        // el.calculated_price = Number(el.price) * Number(el.discount_by_decimal) // decimal
+        // el.calculated_price = Number(el.price) - Number(el.discount_byù_cents)  // cents
+        break;
+      case "2":
+        break
+      default:
+        break
+    }
+
+  }
+
   // const nq = checkDate(result, result.length, result[0].price_date);
   // if (nq) return { status: "errore", message: "trovata un incongruenza con le date dei prezzi" }
 
 
 
   let date = result[0].price_date;
+
   
+
 
   // const price_list_by_date = await driver.findAll("central", "_design/prices/_view/price_list_by_date");
 
@@ -145,6 +163,7 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
   // if (found_by_date) return { status: "success", message: "questa data esiste, quindi è da aggiornare" }
 
+  console.log(result[0])
   try {
     await driver.insertItem(
       PRICELIST_DB_NAME,
@@ -159,36 +178,37 @@ ipcMain.handle("loadSheet", async (event, payload) => {
       }
     );
 
-    let groceryPrices = [...result].filter(x=>x.sell_type == "2");
+    let groceryPrices = [...result].filter(x => x.sell_type == "2");
 
     
-    sql.connect(config, async err=> {
-      if (err) return res.json({ status: "error", message: err.message });
-      const request = new sql.Request();
-      await request.query("TRUNCATE table [dbo].[plu]")
-      for(let i = 0; i<groceryPrices.length; i++){
-        const SQL =  buildOneSQL(groceryPrices[i]);
 
-        request.query(SQL, (err, result) => {
-          if (err) return console.log({ status: "error", message:err.message, sql:SQL});
-          // let target = result.recordset
-          // if (!target) return res.json({ status: "error", message: "no item found" });
-  
-          // const processed = bui(target);
-          // console.log(processed);
-          // console.log(`inserted grocery products ${i} into scale 🚀`) //data:SqlToJson(target)
-        })
-      }
+    // sql.connect(config, async err => {
+    //   if (err) return res.json({ status: "error", message: err.message });
+    //   const request = new sql.Request();
+    //   await request.query("TRUNCATE table [dbo].[plu]")
+    //   for (let i = 0; i < groceryPrices.length; i++) {
+    //     const SQL = buildOneSQL(groceryPrices[i]);
 
-     
-    })
+    //     request.query(SQL, (err, result) => {
+    //       if (err) return console.log({ status: "error", message: err.message, sql: SQL });
+    //       // let target = result.recordset
+    //       // if (!target) return res.json({ status: "error", message: "no item found" });
+
+    //       // const processed = bui(target);
+    //       // console.log(processed);
+    //       // console.log(`inserted grocery products ${i} into scale 🚀`) //data:SqlToJson(target)
+    //     })
+    //   }
+
+
+    // })
 
 
 
     return { status: "success", message: "il prezziario è stato inserito con successo" }
   } catch (err) {
     return { status: "error", message: err.message }
-    
+
   }
 
 
@@ -234,6 +254,6 @@ ipcMain.on("showMessage", (e, { title, message }) => {
   })
 })
 
-ipcMain.handle('getHostName', async ()=>{
+ipcMain.handle('getHostName', async () => {
   return os.hostname()
 })
