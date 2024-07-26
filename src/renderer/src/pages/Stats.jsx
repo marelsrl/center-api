@@ -9,12 +9,12 @@ Chart.register(ArcElement, Tooltip, Legend);
 function Stats() {
 
 
-    let [sessionsState, setSessionsState] = useContext(GlobalContext).sessionsState;
+    let [sessionsState, _] = useContext(GlobalContext).sessionsState;
     let [ready, setReady] = useState(false);
     let [chartData, setChartData] = useState({
         labels: [],
         datasets: [{
-            label: "",
+            label: "quantità",
             data: [],
             backgroundColor: []
         }],
@@ -47,13 +47,13 @@ function Stats() {
 
         }
 
-        function extractData(n = 1) {
+        function buildChart(n = 1) {
             for (let i = 0; i < n; i++) {
                 let oneKey = Object.keys(categories)[i];
                 let oneVal = Object.values(categories)[i];
                 let cp = { ...chartData };
                 cp.labels.push(oneKey);
-                cp.datasets[0].label = "prodotti";
+  
                 cp.datasets[0].data.push(oneVal);
                 cp.datasets[0].backgroundColor.push(colors[i])
                 setChartData(cp)
@@ -61,12 +61,12 @@ function Stats() {
 
         }
 
-        const colors = ["red", "green", "orange"]
+        const colors = ["green", "blue", "orange"]
         // definire il grafico
         const numeroCategorie = Object.keys(categories).length // 1,2,3
 
         // crea il grafico in base al numero di categorie di prodotto individuate
-        extractData(numeroCategorie);
+        buildChart(3);
 
         
         setReady(true)
@@ -80,7 +80,7 @@ function Stats() {
                     {/* <span className="absolute translate-y-3">I PIU VENDUTI</span> */}
                     <span className="absolute font-bold bottom-3 right-3">I PIÙ VENDUTI</span>
                     {
-                        ready && <Doughnut className="w-full h-full" data={chartData} />
+                        ready && <Doughnut className="p-10" data={chartData} />
                     }
 
                 </div>
