@@ -1,5 +1,6 @@
 import { Card, Typography } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
+import { Table } from "react-bootstrap";
 
 const TABLE_HEAD = ["Name", "Job", "Employed", ""];
 
@@ -38,27 +39,27 @@ export default function TableWithStripedColumns({data}) {
   console.warn(header)
   
   return (
-    <Card className="h-[90%] w-full overflow-scroll">
-      <table className="w-full min-w-max table-auto text-left">
+    <Card className="h-[90%] w-full">
+           <Table striped bordered hover >
         <thead>
           <tr>
-            {header?.map((head) => (
-              <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal leading-none opacity-70"
-                >
-                  {head}
-                </Typography>
-              </th>
-            ))}
+            {
+                header.map(x=><th>{x}</th>)
+            }
           </tr>
         </thead>
         <tbody>
-        
+          {
+            data.map(x=>{
+                return(
+                    <tr>
+                       {Object.values(x).slice(0,12).map(y=><td>{y}</td>)}
+                    </tr>
+                )
+            })
+          }
         </tbody>
-      </table>
+      </Table>  
     </Card>
   );
 }

@@ -9,7 +9,7 @@ import moment from 'moment';
 
 // server
 import server from './server.js';
-import fs from 'fs'
+
 
 // database
 import couchDb from "./database.js";
@@ -18,6 +18,16 @@ import bcrypt from 'bcrypt';
 // import { checkDate } from './utils.js';
 import { buildOneSQL } from './SQL/d.js';
 import { sql, config } from './SQL/sqlConnection.js';
+
+import deviceOperations from "../APIS/deviceOperations.js";
+import deviceInfo from "../APIS/deviceInfo.js";
+import { startPaymentKeepAlive } from '../APIS/utils.js';
+import utility from "../APIS/utility.js";
+import { VITE_CASHMATIC_USERNAME, VITE_CASHMATIC_PASSWORD } from '../constants.js'
+const credenziali = {
+  username: VITE_CASHMATIC_USERNAME,
+  password: VITE_CASHMATIC_PASSWORD
+}
 
 const credentials = {
   user: "admin",
@@ -131,9 +141,9 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
 
   for (let el of result) {
-    
-    switch(el.promo_type){
-      case "1": 
+
+    switch (el.promo_type) {
+      case "1":
         // el.calculated_price = (Number(el.price) * Number(el.discount_by_percentage)) / 100; // percentage
         // el.calculated_price = Number(el.price) * Number(el.discount_by_decimal) // decimal
         // el.calculated_price = Number(el.price) - Number(el.discount_byù_cents)  // cents
@@ -153,7 +163,7 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
   let date = result[0].price_date;
 
-  
+
 
 
   // const price_list_by_date = await driver.findAll("central", "_design/prices/_view/price_list_by_date");
@@ -180,7 +190,7 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
     let groceryPrices = [...result].filter(x => x.sell_type == "2");
 
-    
+
 
     // sql.connect(config, async err => {
     //   if (err) return res.json({ status: "error", message: err.message });
@@ -216,10 +226,20 @@ ipcMain.handle("loadSheet", async (event, payload) => {
 
 })
 
-ipcMain.handle("addUser", (event, payload) => {
+ipcMain.handle("addUser", async (event, payload) => {
 
-  const withPasswordHashed = { ...payload, password: bcrypt.hashSync(payload.password, 7) }
-  driver.insertItem(USERS_DB_NAME, withPasswordHashed)
+  try {
+    let found = await driver.findByEmployeeId(USERS_DB_NAME, payload.employee_id);
+    console.log(found)
+
+    if (found && found != null) return { status: "error", message: "Utente già esistente" }
+    const withPasswordHashed = { ...payload, password: bcrypt.hashSync(payload.password, 7) }
+    driver.insertItem(USERS_DB_NAME, withPasswordHashed);
+    return { status: "success" }
+  } catch (error) {
+    return { status: "error", message: error?.message }
+  }
+
 })
 
 
@@ -256,4 +276,31 @@ ipcMain.on("showMessage", (e, { title, message }) => {
 
 ipcMain.handle('getHostName', async () => {
   return os.hostname()
+})
+
+ipcMain.handle("refill:start", async () => {
+  let d = await deviceOperations.login(credenziali)
+
+  let token = d.data.token;
+  return deviceOperations.startRefill({ token })
+
+})
+ipcMain.handle("refill:stop", async () => {
+  let d = await deviceOperations.login(credenziali)
+
+  let token = d.data.token;
+  return deviceOperations.stopRefill( token )
+
+})
+
+ipcMain.handle("whitdraw", async (event, amount) => {
+  let d = await deviceOperations.login(credenziali)
+
+  console.log(amount)
+  let token = d.data.token;
+  deviceOperations.startWithdrawal({
+    token: token,
+    amount: amount,
+  })
+
 })

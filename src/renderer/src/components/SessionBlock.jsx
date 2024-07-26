@@ -1,10 +1,8 @@
 function SessionBlock({ data }) {
 
 
-    console.log(data);
 
     // const currentCart = data?.currentCart;
-
     return (
         <div className="w-[300px] h-[300px] shadow-xl flex items-center justify-center flex-col">
             <h1 className="mb-10 text-3xl">{data.device}</h1>

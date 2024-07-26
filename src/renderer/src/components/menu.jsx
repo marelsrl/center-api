@@ -1,6 +1,5 @@
 import MenuButton from "./MenuButton";
 
-
 function Menu() {
 
     return (
@@ -13,6 +12,8 @@ function Menu() {
                 <MenuButton title="check latest price" route="/check_latest_price"/>
                 <br/>
                <MenuButton title="sessions" route="/sessions" />
+                <br/>
+               <MenuButton title="automatic cashier" route="/automatica_cashier" />
             </ul>
         </div>
     )

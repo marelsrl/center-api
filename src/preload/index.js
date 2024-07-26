@@ -11,6 +11,9 @@ const api = {
   retriveSessions:()=>electronAPI.ipcRenderer.invoke("retriveSessions"),
   showError:msg=>electronAPI.ipcRenderer.send("showError",msg),
   showMessage:payload=>electronAPI.ipcRenderer.send("showMessage",payload),
+  refillStart:()=>electronAPI.ipcRenderer.invoke("refill:start"),
+  refillStop:()=>electronAPI.ipcRenderer.invoke("refill:stop"),
+  whitdraw:amount=>electronAPI.ipcRenderer.invoke("whitdraw",amount),
   ipcRenderer:electronAPI.ipcRenderer
 }
 
