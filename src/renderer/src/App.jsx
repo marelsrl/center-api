@@ -15,7 +15,7 @@ import Navbar from './components/Navbar.jsx';
 
 
 // services
-import { GlobalContext } from './serices/GlobalContext.js';
+import { GlobalContext } from './services/GlobalContext.js';
 import PouchDB from "pouchdb/dist/pouchdb";
 import LandingPage from './pages/Landing.jsx';
 import AutomaticCashier from './pages/automatic_cashier.jsx';

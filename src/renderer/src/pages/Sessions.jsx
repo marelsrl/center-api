@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { GlobalContext } from "../serices/GlobalContext";
+import { GlobalContext } from "../services/GlobalContext";
 
 
 // components
