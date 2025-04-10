@@ -3,7 +3,7 @@ import { Chart, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElem
 
 // graphs
 import MostCategories from "../charts/mostCategories";
-import Prices from "../charts/Prices";
+import Prices from "../charts/prices";
 import Discounts from "../charts/discounts";
 import AffluenceDays from "../charts/affluenceDays";
 

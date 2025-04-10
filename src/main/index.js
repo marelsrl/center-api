@@ -51,6 +51,7 @@ let mainWindow;
 function createWindow() {
 
   mainWindow = new BrowserWindow({
+    title:"Marel cashier server",
     width: 900,
     height: 670,
     show: false,
